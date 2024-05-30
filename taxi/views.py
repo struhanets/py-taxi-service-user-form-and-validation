@@ -105,15 +105,15 @@ class DriverUpdateView(LoginRequiredMixin, generic.UpdateView):
     form_class = DriverLicenseUpdateForm
 
 
-@login_required
-def assign_driver(request, pk):
-    car = get_object_or_404(Car, pk=pk)
-    car.drivers.add(request.user)
-    return redirect(reverse("taxi:car-detail", args=[pk]))
+class RemoveDriverView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk):
+        car = get_object_or_404(Car, pk=pk)
+        car.drivers.remove(request.user)  # Видалення водія
+        return redirect(reverse("taxi:car-detail", args=[pk]))
 
 
-@login_required
-def remove_driver(request, pk):
-    car = get_object_or_404(Car, pk=pk)
-    car.drivers.remove(request.user)
-    return redirect(reverse("taxi:car-detail", args=[pk]))
+class AssignmentDriverView(LoginRequiredMixin, generic.View):
+    def post(self, request, pk):
+        car = get_object_or_404(Car, pk=pk)
+        car.drivers.add(request.user)  # Додавання водія
+        return redirect(reverse("taxi:car-detail", args=[pk]))
